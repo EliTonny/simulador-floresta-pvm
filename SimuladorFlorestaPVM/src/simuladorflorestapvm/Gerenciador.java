@@ -1,8 +1,22 @@
 package simuladorflorestapvm;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import jpvm.jpvmBuffer;
+import jpvm.jpvmEnvironment;
+import jpvm.jpvmException;
+import jpvm.jpvmMessage;
+import jpvm.jpvmTaskId;
 import simuladorflorestapvm.etapasCiclo.Adulta;
 import simuladorflorestapvm.etapasCiclo.Broto;
 import simuladorflorestapvm.etapasCiclo.Morte;
@@ -11,6 +25,7 @@ import simuladorflorestapvm.etapasCiclo.Semente;
 public class Gerenciador {
 
     public static final int NUM_CLICOS_DIA = 50;
+    private static final int ESCRAVOS_ARMAZEM = 4;
     public static Gerenciador instancia;
     private Terreno ter;
     private int larguraTerreno;
@@ -65,7 +80,7 @@ public class Gerenciador {
             lenhador2.setFinalizado(true);
             lenhador3.setFinalizado(true);
             ter.setFinalizarProcesso(true);
-            
+
             lenhador1.join();
             lenhador2.join();
             lenhador3.join();
@@ -84,7 +99,7 @@ public class Gerenciador {
         }
     }
 
-    private void ProximoDia() throws InterruptedException {
+    private void ProximoDia() throws InterruptedException, FileNotFoundException, IOException {
 
         AtomicInteger numArvoresProcessadas = new AtomicInteger(0);
         ambienteFinalizado.set(false);
@@ -98,6 +113,11 @@ public class Gerenciador {
         Fotossintese fot2 = new Fotossintese(ter);
         Fotossintese fot3 = new Fotossintese(ter);
         Fotossintese fot4 = new Fotossintese(ter);
+
+        Armazem armMorte = null;
+        Armazem armSemente = null;
+        Armazem armBroto = null;
+        Armazem armAdulta = null;
 
         amb1.start();
         amb2.start();
@@ -120,11 +140,69 @@ public class Gerenciador {
         fot4.join();
 
         this.ambienteFinalizado.set(false);
-        Armazem armMorte = new Armazem(ter.getArvoresEtapa());
-        Armazem armSemente = new Armazem(ter.getArvoresEtapa(EnumEtapaProcesso.SEMENTE));
-        Armazem armBroto = new Armazem(ter.getArvoresEtapa(EnumEtapaProcesso.BROTO));
-        Armazem armAdulta = new Armazem(ter.getArvoresEtapa(EnumEtapaProcesso.ADULTA));
 
+        try {
+            jpvmEnvironment jpvm = new jpvmEnvironment();
+            jpvmTaskId tids[] = new jpvmTaskId[ESCRAVOS_ARMAZEM];
+            jpvm.pvm_spawn("atEscravos.carregaArmazem", ESCRAVOS_ARMAZEM, tids);
+            File arquivo = new File("c:/temp/terreno.txt");
+            BufferedReader leitor = new BufferedReader(new FileReader(arquivo.getAbsolutePath()));
+            jpvmBuffer buf = new jpvmBuffer();
+            String arquivoSerializado = "";
+
+            try {
+                while (leitor.ready()) {
+                    arquivoSerializado += leitor.readLine();
+                }
+                leitor.close();
+            } catch (IOException ex) {
+                System.out.println(ex.getMessage());
+            }
+            buf.pack(arquivoSerializado);
+
+            for (int i = 0; i < ESCRAVOS_ARMAZEM; i++) {
+                jpvm.pvm_send(buf, tids[i], i);
+            }
+
+            for (int i = 0; i < ESCRAVOS_ARMAZEM; i++) {
+                jpvmMessage message = jpvm.pvm_recv();
+
+                File arquivoArm = new File("c:/temp/armazemm_" + message.messageTag + ".txt");
+
+                FileWriter escritorArquivo = new FileWriter(arquivoArm);
+                BufferedWriter escritor = new BufferedWriter(escritorArquivo);
+                escritor.write(message.buffer.upkstr());
+                escritor.close();
+
+                switch (message.messageTag) {
+                    case 1:
+                        armMorte = (Armazem) Dao.getInstancia().Carrega(arquivoArm);
+                        break;
+                    case 2:
+                        armSemente = (Armazem) Dao.getInstancia().Carrega(arquivoArm);
+                        break;
+                    case 3:
+                        armBroto = (Armazem) Dao.getInstancia().Carrega(arquivoArm);
+                        break;
+                    case 4:
+                        armAdulta = (Armazem) Dao.getInstancia().Carrega(arquivoArm);
+                        break;
+                }
+            }
+
+            jpvm.pvm_exit();
+
+        } catch (jpvmException ex) {
+            Logger.getLogger(Gerenciador.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        System.out.println("Terminou PVM");
+        Thread.sleep(10000000);
+
+        /*Armazem armMorte = new Armazem(ter.getArvoresEtapa());
+         Armazem armSemente = new Armazem(ter.getArvoresEtapa(EnumEtapaProcesso.SEMENTE));
+         Armazem armBroto = new Armazem(ter.getArvoresEtapa(EnumEtapaProcesso.BROTO));
+         Armazem armAdulta = new Armazem(ter.getArvoresEtapa(EnumEtapaProcesso.ADULTA));*/
         Morte morte1 = new Morte(armMorte);
         Morte morte2 = new Morte(armMorte);
         Morte morte3 = new Morte(armMorte);

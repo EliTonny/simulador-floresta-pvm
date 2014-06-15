@@ -1,5 +1,8 @@
 package simuladorflorestapvm;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Queue;
@@ -9,7 +12,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class Terreno {
+public class Terreno implements Serializable{
 
     private int XMax;
     private int YMax;
@@ -52,7 +55,7 @@ public class Terreno {
      * @param largura Largura do terreno em metros
      * @param comprimento comprimento do terreno em metros
      */
-    public void Inicializa(int largura, int comprimento, AtomicBoolean finalizar) {
+    public void Inicializa(int largura, int comprimento, AtomicBoolean finalizar) throws IOException {
         this.XMax = comprimento;
         this.YMax = largura;
         arvores = new Arvore[comprimento * POSICOES_POR_METRO][largura * POSICOES_POR_METRO];
@@ -67,6 +70,7 @@ public class Terreno {
         lockFotossintese = new ReentrantLock();
         condHasArvoreFotossintese = lockFotossintese.newCondition();
         arvoresCorte = new ArrayDeque<>();
+        Dao.getInstancia().Persiste(new File("c:/temp/terreno.txt"), this);
     }
 
     public synchronized boolean killArvore(Arvore arvore) {
