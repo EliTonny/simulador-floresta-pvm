@@ -1,17 +1,11 @@
 package simuladorflorestapvm;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JOptionPane;
+import java.io.UnsupportedEncodingException;
 
 public class Dao {
 
@@ -26,27 +20,36 @@ public class Dao {
         }
         return instancia;
     }
+    /**
+     * Serialize any object
+     *
+     * @param obj
+     * @return
+     */
+    public String serialize(Object obj) throws IOException {
 
-    public void Persiste(File arquivo, Object obj) throws FileNotFoundException, IOException {
-        FileOutputStream fileOutput = new FileOutputStream(arquivo);
-        BufferedOutputStream bufferedOutput = new BufferedOutputStream(fileOutput);
-        ObjectOutputStream objectOutput = new ObjectOutputStream(bufferedOutput);
-        objectOutput.writeObject(obj);
-        objectOutput.flush();
+        ByteArrayOutputStream bo = new ByteArrayOutputStream();
+        ObjectOutputStream so = new ObjectOutputStream(bo);
+        so.writeObject(obj);
+        so.flush();
+        // This encoding induces a bijection between byte[] and String (unlike UTF-8)
+        return bo.toString("ISO-8859-1");
     }
 
-    public Object Carrega(File arquivo) {
-        if (arquivo.exists()) {
-            try {
-                FileInputStream fileInputStream = new FileInputStream(arquivo);
-                BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream); //abre
-                ObjectInputStream objetos = new ObjectInputStream(bufferedInputStream);
-                Object obj = objetos.readObject();
-                return obj;
-            } catch (Exception ex) {
-                Logger.getLogger(Dao.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        return null;
+    /**
+     * Deserialize any object
+     *
+     * @param str
+     * @param cls
+     * @return
+     */
+    public <T> T deserialize(String str, Class<T> cls) throws UnsupportedEncodingException, IOException, ClassNotFoundException {
+        // deserialize the object
+
+        // This encoding induces a bijection between byte[] and String (unlike UTF-8)
+        byte b[] = str.getBytes("ISO-8859-1");
+        ByteArrayInputStream bi = new ByteArrayInputStream(b);
+        ObjectInputStream si = new ObjectInputStream(bi);
+        return cls.cast(si.readObject());
     }
 }

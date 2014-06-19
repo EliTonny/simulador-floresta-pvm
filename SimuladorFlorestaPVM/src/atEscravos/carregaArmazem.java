@@ -1,13 +1,7 @@
 package atEscravos;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import javax.swing.JOptionPane;
+import java.io.UnsupportedEncodingException;
 import jpvm.jpvmBuffer;
 import jpvm.jpvmEnvironment;
 import jpvm.jpvmException;
@@ -27,50 +21,30 @@ public class carregaArmazem {
             jpvmTaskId parent = jpvm.pvm_parent();
             jpvmBuffer buf = new jpvmBuffer();
             Armazem armazem = null;
-            Terreno ter = null;
-            File arquivo = new File("c:/temp/terrenoe_" + message.messageTag + ".txt");
-            File arquivoRet = new File("c:/temp/armazeme_" + message.messageTag + ".txt");
-            String arquivoSerializado = "";
+            Terreno ter = Dao.getInstancia().deserialize(message.buffer.upkstr(), Terreno.class);
 
             try {
 
-                FileWriter escritorArquivo = new FileWriter(arquivo);
-                BufferedWriter escritor = new BufferedWriter(escritorArquivo);
-                escritor.write(message.buffer.upkstr());
-                escritor.close();
-
-                Object obj = Dao.getInstancia().Carrega(arquivo);
-                if (obj instanceof Terreno) {
-                    ter = (Terreno) obj;
-                }
-
                 switch (message.messageTag) {
-                    case 1:
+                    case 0:
                         //Armazem morte
                         armazem = new Armazem(ter.getArvoresEtapa());
                         break;
-                    case 2:
+                    case 1:
                         //Armazem semente
                         armazem = new Armazem(ter.getArvoresEtapa(EnumEtapaProcesso.SEMENTE));
                         break;
-                    case 3:
+                    case 2:
                         //Armazem broto
                         armazem = new Armazem(ter.getArvoresEtapa(EnumEtapaProcesso.BROTO));
                         break;
-                    case 4:
+                    case 3:
                         //Armazem adulta
                         armazem = new Armazem(ter.getArvoresEtapa(EnumEtapaProcesso.ADULTA));
                         break;
                 }
-
-                Dao.getInstancia().Persiste(arquivoRet, armazem);
-                BufferedReader leitor = new BufferedReader(new FileReader(arquivoRet.getAbsolutePath()));
-                while (leitor.ready()) {
-                    arquivoSerializado += leitor.readLine();
-                }
-                leitor.close();
-
-                buf.pack(arquivoSerializado);
+                
+                buf.pack(Dao.getInstancia().serialize(armazem));
 
                 jpvm.pvm_send(buf, parent, message.messageTag);
             } catch (Exception ex) {
@@ -79,8 +53,8 @@ public class carregaArmazem {
             }
 
             jpvm.pvm_exit();
-        } catch (jpvmException jpe) {
-            System.out.println("Error - jpvm exception");
+        } catch (jpvmException | UnsupportedEncodingException | ClassNotFoundException ex) {
+            System.out.println(ex.getMessage());
         }
     }
 }

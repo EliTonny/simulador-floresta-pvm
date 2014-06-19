@@ -1,6 +1,8 @@
 package simuladorflorestapvm;
 
-public class Posicao {
+import java.io.Serializable;
+
+public class Posicao implements Serializable {
 
     private int X;
     private int Y;
