@@ -1,11 +1,6 @@
 package simuladorflorestapvm;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -30,8 +25,10 @@ public class Gerenciador {
     private Terreno ter;
     private int larguraTerreno;
     private int comprimentoTerreno;
-    AtomicBoolean ambienteFinalizado;
-
+    private AtomicBoolean ambienteFinalizado;
+    private jpvmEnvironment jpvm;
+    private jpvmTaskId tids[];
+            
     public static Gerenciador getinstancia() {
         if (instancia == null) {
             instancia = new Gerenciador();
@@ -49,6 +46,10 @@ public class Gerenciador {
             int numArvores,
             int dias) {
         try {
+                
+            jpvm = new jpvmEnvironment();
+            tids = new jpvmTaskId[ESCRAVOS_ARMAZEM];
+            
             this.larguraTerreno = larguraTerreno;
             this.comprimentoTerreno = comprimentoTerreno;
 
@@ -96,6 +97,8 @@ public class Gerenciador {
 
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
+        } catch (jpvmException ex) {
+            Logger.getLogger(Gerenciador.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -142,62 +145,38 @@ public class Gerenciador {
         this.ambienteFinalizado.set(false);
 
         try {
-            jpvmEnvironment jpvm = new jpvmEnvironment();
-            jpvmTaskId tids[] = new jpvmTaskId[ESCRAVOS_ARMAZEM];
+            
             jpvm.pvm_spawn("atEscravos.carregaArmazem", ESCRAVOS_ARMAZEM, tids);
-            File arquivo = new File("c:/temp/terreno.txt");
-            BufferedReader leitor = new BufferedReader(new FileReader(arquivo.getAbsolutePath()));
             jpvmBuffer buf = new jpvmBuffer();
-            String arquivoSerializado = "";
-
-            try {
-                while (leitor.ready()) {
-                    arquivoSerializado += leitor.readLine();
-                }
-                leitor.close();
-            } catch (IOException ex) {
-                System.out.println(ex.getMessage());
-            }
+            String arquivoSerializado = Dao.getInstancia().serialize(Terreno.getInstancia());
             buf.pack(arquivoSerializado);
 
             for (int i = 0; i < ESCRAVOS_ARMAZEM; i++) {
                 jpvm.pvm_send(buf, tids[i], i);
             }
-
             for (int i = 0; i < ESCRAVOS_ARMAZEM; i++) {
                 jpvmMessage message = jpvm.pvm_recv();
 
-                File arquivoArm = new File("c:/temp/armazemm_" + message.messageTag + ".txt");
-
-                FileWriter escritorArquivo = new FileWriter(arquivoArm);
-                BufferedWriter escritor = new BufferedWriter(escritorArquivo);
-                escritor.write(message.buffer.upkstr());
-                escritor.close();
-
                 switch (message.messageTag) {
+                    case 0:
+                        armMorte = Dao.getInstancia().deserialize(message.buffer.upkstr(), Armazem.class);
+                        break;
                     case 1:
-                        armMorte = (Armazem) Dao.getInstancia().Carrega(arquivoArm);
+                        armSemente = Dao.getInstancia().deserialize(message.buffer.upkstr(), Armazem.class);
                         break;
                     case 2:
-                        armSemente = (Armazem) Dao.getInstancia().Carrega(arquivoArm);
+                        armBroto = Dao.getInstancia().deserialize(message.buffer.upkstr(), Armazem.class);
                         break;
                     case 3:
-                        armBroto = (Armazem) Dao.getInstancia().Carrega(arquivoArm);
-                        break;
-                    case 4:
-                        armAdulta = (Armazem) Dao.getInstancia().Carrega(arquivoArm);
+                        armAdulta = Dao.getInstancia().deserialize(message.buffer.upkstr(), Armazem.class);
                         break;
                 }
             }
-
             jpvm.pvm_exit();
 
-        } catch (jpvmException ex) {
+        } catch (ClassNotFoundException | jpvmException ex) {
             Logger.getLogger(Gerenciador.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        System.out.println("Terminou PVM");
-        Thread.sleep(10000000);
 
         /*Armazem armMorte = new Armazem(ter.getArvoresEtapa());
          Armazem armSemente = new Armazem(ter.getArvoresEtapa(EnumEtapaProcesso.SEMENTE));

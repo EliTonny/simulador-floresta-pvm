@@ -12,7 +12,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class Terreno implements Serializable{
+public class Terreno implements Serializable {
 
     private int XMax;
     private int YMax;
@@ -70,7 +70,7 @@ public class Terreno implements Serializable{
         lockFotossintese = new ReentrantLock();
         condHasArvoreFotossintese = lockFotossintese.newCondition();
         arvoresCorte = new ArrayDeque<>();
-        Dao.getInstancia().Persiste(new File("c:/temp/terreno.txt"), this);
+        //Dao.getInstancia().Persiste(new File("c:/temp/terreno.txt"), this);
     }
 
     public synchronized boolean killArvore(Arvore arvore) {

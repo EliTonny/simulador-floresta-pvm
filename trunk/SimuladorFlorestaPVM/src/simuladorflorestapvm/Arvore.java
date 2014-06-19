@@ -1,12 +1,13 @@
 package simuladorflorestapvm;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public abstract class Arvore {
+public abstract class Arvore implements Serializable {
 
     private final int TEMPO_ESPERA = 0;
     private int agua;
