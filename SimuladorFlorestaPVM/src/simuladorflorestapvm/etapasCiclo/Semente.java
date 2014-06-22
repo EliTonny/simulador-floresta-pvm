@@ -13,9 +13,9 @@ public class Semente extends Etapa {
     }
 
     @Override
-    public void executar(Arvore arvore) {
+    public Arvore executar(Arvore arvore) {
         if (arvore == null) {
-            return;
+            return null;
         }
 
         try {
@@ -36,5 +36,6 @@ public class Semente extends Etapa {
         } catch (Exception ex) {
             Logger.getLogger(Semente.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return arvore;
     }
 }

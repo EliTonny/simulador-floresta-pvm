@@ -1,11 +1,12 @@
 package simuladorflorestapvm.etapasCiclo;
 
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import simuladorflorestapvm.Armazem;
 import simuladorflorestapvm.Arvore;
 
-public abstract class Etapa extends Thread {
+public abstract class Etapa {
 
     private Armazem armazem;
 
@@ -13,15 +14,17 @@ public abstract class Etapa extends Thread {
         this.armazem = armazem;
     }
 
-    public abstract void executar(Arvore arvore);
+    public abstract Arvore executar(Arvore arvore);
 
-    @Override
-    public void run() {
+    public ArrayList run() {
+        ArrayList retorno = new ArrayList();
         while (armazem.getHaElementos().tryAcquire()) {
             try {
                 Object obj = armazem.retira();
                 if (obj instanceof Arvore) {
-                    executar((Arvore) obj);
+                    Arvore arvore = executar((Arvore) obj);
+                    if(arvore != null)
+                        retorno.add(arvore);
                 } else {
                     throw new Exception("Armazem com objetos incompativeis");
                 }
@@ -32,5 +35,6 @@ public abstract class Etapa extends Thread {
             }
 
         }
+        return retorno;
     }
 }

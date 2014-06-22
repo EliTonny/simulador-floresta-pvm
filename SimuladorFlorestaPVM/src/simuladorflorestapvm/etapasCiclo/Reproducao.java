@@ -10,7 +10,7 @@ public class Reproducao extends Etapa {
     }
 
     @Override
-    public void executar(Arvore arvore) {
+    public Arvore executar(Arvore arvore) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
