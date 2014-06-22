@@ -14,9 +14,9 @@ public class Broto extends Etapa {
     }
 
     @Override
-    public void executar(Arvore arvore) {
+    public Arvore executar(Arvore arvore) {
         if (arvore == null) {
-            return;
+            return null;
         }
         try {
             //Custo de vida
@@ -41,5 +41,6 @@ public class Broto extends Etapa {
         } catch (Exception ex) {
             Logger.getLogger(Broto.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return arvore;
     }
 }

@@ -14,9 +14,9 @@ public class Adulta extends Etapa {
     }
 
     @Override
-    public void executar(Arvore arvore) {
+    public Arvore executar(Arvore arvore) {
         if (arvore == null) {
-            return;
+            return null;
         }
         try {
             //Custo de Vida
@@ -31,5 +31,6 @@ public class Adulta extends Etapa {
         } catch (Exception ex) {
             Logger.getLogger(Adulta.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return arvore;
     }
 }

@@ -2,6 +2,8 @@ package simuladorflorestapvm;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
@@ -177,58 +179,53 @@ public class Gerenciador {
         } catch (ClassNotFoundException | jpvmException ex) {
             Logger.getLogger(Gerenciador.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        /*Armazem armMorte = new Armazem(ter.getArvoresEtapa());
-         Armazem armSemente = new Armazem(ter.getArvoresEtapa(EnumEtapaProcesso.SEMENTE));
-         Armazem armBroto = new Armazem(ter.getArvoresEtapa(EnumEtapaProcesso.BROTO));
-         Armazem armAdulta = new Armazem(ter.getArvoresEtapa(EnumEtapaProcesso.ADULTA));*/
-        Morte morte1 = new Morte(armMorte);
-        Morte morte2 = new Morte(armMorte);
-        Morte morte3 = new Morte(armMorte);
-
-        Semente semente1 = new Semente(armSemente);
-        Semente semente2 = new Semente(armSemente);
-        Semente semente3 = new Semente(armSemente);
-
-        Broto broto1 = new Broto(armBroto);
-        Broto broto2 = new Broto(armBroto);
-        Broto broto3 = new Broto(armBroto);
-
-        Adulta adulta1 = new Adulta(armAdulta);
-        Adulta adulta2 = new Adulta(armAdulta);
-        Adulta adulta3 = new Adulta(armAdulta);
-
-        morte1.start();
-        morte2.start();
-        morte3.start();
-
-        semente1.start();
-        semente2.start();
-        semente3.start();
-
-        broto1.start();
-        broto2.start();
-        broto3.start();
-
-        adulta1.start();
-        adulta2.start();
-        adulta3.start();
-
-        morte1.join();
-        morte2.join();
-        morte3.join();
-
-        semente1.join();
-        semente2.join();
-        semente3.join();
-
-        broto1.join();
-        broto2.join();
-        broto3.join();
-
-        adulta1.join();
-        adulta2.join();
-        adulta3.join();
+        
+        try {
+            
+            jpvm.pvm_spawn("atEscravos.executarEtapa", ESCRAVOS_ARMAZEM, tids);
+            jpvmBuffer buf = new jpvmBuffer();
+            String arquivoSerializado = Dao.getInstancia().serialize(armMorte);
+            buf.pack(arquivoSerializado);
+            
+            jpvm.pvm_send(buf, tids[0], 0);
+            
+            jpvmMessage message = jpvm.pvm_recv();
+            
+            try {
+                ArrayList arvores = Dao.getInstancia().deserialize(message.buffer.upkstr(), ArrayList.class);
+                
+                for (Object object : arvores) {
+                    //retirar do terreno
+                }
+                
+            } catch (UnsupportedEncodingException | ClassNotFoundException ex) {
+                Logger.getLogger(Gerenciador.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            
+        } catch (jpvmException ex) {
+            Logger.getLogger(Gerenciador.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+            /*Armazem armMorte = new Armazem(ter.getArvoresEtapa());
+            Armazem armSemente = new Armazem(ter.getArvoresEtapa(EnumEtapaProcesso.SEMENTE));
+            Armazem armBroto = new Armazem(ter.getArvoresEtapa(EnumEtapaProcesso.BROTO));
+            Armazem armAdulta = new Armazem(ter.getArvoresEtapa(EnumEtapaProcesso.ADULTA));*/
+            /*Morte morte1 = new Morte(armMorte);
+            Morte morte2 = new Morte(armMorte);
+            Morte morte3 = new Morte(armMorte);
+            
+            Semente semente1 = new Semente(armSemente);
+            Semente semente2 = new Semente(armSemente);
+            Semente semente3 = new Semente(armSemente);
+            
+            Broto broto1 = new Broto(armBroto);
+            Broto broto2 = new Broto(armBroto);
+            Broto broto3 = new Broto(armBroto);
+            
+            Adulta adulta1 = new Adulta(armAdulta);
+            Adulta adulta2 = new Adulta(armAdulta);
+            Adulta adulta3 = new Adulta(armAdulta);*/
     }
 
     public int getLarguraTerreno() {
