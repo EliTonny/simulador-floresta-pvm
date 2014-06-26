@@ -86,6 +86,14 @@ public class Terreno implements Serializable {
             return false;
         }
     }
+    
+    public synchronized boolean atualizaAtributos(Arvore arvore){
+        if(arvores[arvore.getPosicao().getX()][arvore.getPosicao().getY()] != null){
+            arvores[arvore.getPosicao().getX()][arvore.getPosicao().getY()] = arvore;
+            return true;
+        }
+        return false;
+    }
 
     public synchronized void addArvoreCorte(Arvore arvore) {
         if (!arvoresCorte.contains(arvore)) {
