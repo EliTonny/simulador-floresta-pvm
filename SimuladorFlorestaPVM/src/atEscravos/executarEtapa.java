@@ -11,7 +11,10 @@ import jpvm.jpvmTaskId;
 import simuladorflorestapvm.Armazem;
 import simuladorflorestapvm.Dao;
 import simuladorflorestapvm.Terreno;
+import simuladorflorestapvm.etapasCiclo.Adulta;
+import simuladorflorestapvm.etapasCiclo.Broto;
 import simuladorflorestapvm.etapasCiclo.Morte;
+import simuladorflorestapvm.etapasCiclo.Semente;
 
 /**
  *
@@ -35,15 +38,18 @@ public class executarEtapa {
                     break;
 
                 case 1:
-                    // to do
+                    Semente semente = new Semente(armazem);
+                    arvores = semente.run();
                     break;
 
                 case 2:
-                    // to do
+                    Broto broto = new Broto(armazem);
+                    arvores = broto.run();
                     break;
 
                 case 3:
-                    // to do
+                    Adulta adulta = new Adulta(armazem);
+                    arvores = adulta.run();
                     break;
             }
 
