@@ -7,10 +7,10 @@ public class FramePrincipal extends javax.swing.JFrame {
     public FramePrincipal() {
         initComponents();
 
-        txtLarguraTerreno.setText("100");
-        txtComprimentoTerreno.setText("100");
-        txtNumeroArvores.setText("1000");
-        txtNumeroDias.setText("365");
+        txtLarguraTerreno.setText("10");
+        txtComprimentoTerreno.setText("10");
+        txtNumeroArvores.setText("100");
+        txtNumeroDias.setText("10");
         verificaNumMaxArvores();
     }
 
