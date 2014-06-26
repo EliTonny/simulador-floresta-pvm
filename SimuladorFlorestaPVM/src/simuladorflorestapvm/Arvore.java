@@ -28,6 +28,8 @@ public abstract class Arvore implements Serializable {
     private int saisFotossintese;
     private ArrayList<Galho> galhos;
     private EnumEtapaProcesso etapa;
+    private long ID;
+    private static long ContadorID;
 
     public Arvore(int tamanhoMax,
             int raioMax,
@@ -46,6 +48,21 @@ public abstract class Arvore implements Serializable {
         this.saisFotossintese = saisFot;
         this.galhos = new ArrayList();
         this.etapa = etapa;
+        this.ID = Arvore.ContadorID;
+        Arvore.ContadorID++;
+    }
+
+    @Override
+    public boolean equals(Object objeto) {
+        if (objeto == null) {
+            return false;
+        }
+        if (objeto instanceof Arvore) {
+            if (((Arvore) objeto).ID == this.ID) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public Posicao getPosicao() {
@@ -95,7 +112,7 @@ public abstract class Arvore implements Serializable {
     public int getEnergia() {
         return energia;
     }
-    
+
     public String ImprimeDados() {
         String saida = "";
         int qtdfolhas = 0;
