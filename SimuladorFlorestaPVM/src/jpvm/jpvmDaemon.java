@@ -307,7 +307,7 @@ public class jpvmDaemon {
 	private static jpvmTaskList     	tasks = null;
 	private static jpvmTaskList     	hosts = null;
 	private static jpvmSpawnWorkOrderList	spawnOrders = null;
-	private static int			maxCreateOrders = 256;
+	private static int			maxCreateOrders = 20000;
 	private static jpvmCreateWorkOrder	createOrders[];
 	private static int			nextCreateOrder = 0;
 
@@ -657,7 +657,7 @@ public class jpvmDaemon {
 			perror("bad CreateTask invocation");
 			return;
 		}
-	
+                
 		if(createOrders[nextCreateOrder]==null) 
 			createOrders[nextCreateOrder]=new jpvmCreateWorkOrder();
 

@@ -2,6 +2,7 @@ package atEscravos;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import javax.swing.JOptionPane;
 import jpvm.jpvmBuffer;
 import jpvm.jpvmEnvironment;
 import jpvm.jpvmException;
@@ -48,12 +49,14 @@ public class carregaArmazem {
 
                 jpvm.pvm_send(buf, parent, message.messageTag);
             } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "Vish3");
                 buf.pack("Erro");
                 jpvm.pvm_send(buf, parent, message.messageTag);
             }
 
             jpvm.pvm_exit();
         } catch (jpvmException | UnsupportedEncodingException | ClassNotFoundException ex) {
+            JOptionPane.showMessageDialog(null, "Vish4");
             System.out.println(ex.getMessage());
         }
     }
