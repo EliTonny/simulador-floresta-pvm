@@ -3,6 +3,7 @@ package atEscravos;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 import jpvm.jpvmBuffer;
 import jpvm.jpvmEnvironment;
 import jpvm.jpvmException;
@@ -27,7 +28,6 @@ public class executarEtapa {
             jpvmEnvironment jpvm = new jpvmEnvironment();
             jpvmMessage message = jpvm.pvm_recv();
             jpvmTaskId parent = jpvm.pvm_parent();
-            jpvmBuffer buf = new jpvmBuffer();
             Armazem armazem = Dao.getInstancia().deserialize(message.buffer.upkstr(), Armazem.class);
             ArrayList arvores = null;
 
@@ -52,13 +52,18 @@ public class executarEtapa {
                     arvores = adulta.run();
                     break;
             }
-
+            
+            if(arvores == null)
+                JOptionPane.showMessageDialog(null, "Vish");
+            
+            jpvmBuffer buf = new jpvmBuffer();
             buf.pack(Dao.getInstancia().serialize(arvores));
             jpvm.pvm_send(buf, parent, message.messageTag);
             
             jpvm.pvm_exit();
 
         } catch (jpvmException | UnsupportedEncodingException | ClassNotFoundException ex) {
+            JOptionPane.showMessageDialog(null, "Vish22");
             System.out.println(ex.getMessage());
         }
     }

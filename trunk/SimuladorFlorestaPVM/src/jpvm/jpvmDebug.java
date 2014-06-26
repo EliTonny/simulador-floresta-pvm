@@ -35,6 +35,6 @@ final class jpvmDebug {
 	public static final void error(String message) {
 		System.err.println("jpvmDebug: "+message);
 		System.err.flush();
-		System.exit(1);
+		//System.exit(1);
 	}
 };

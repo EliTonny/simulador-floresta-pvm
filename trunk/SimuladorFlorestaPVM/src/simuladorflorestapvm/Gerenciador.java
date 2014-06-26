@@ -48,10 +48,6 @@ public class Gerenciador {
             int numArvores,
             int dias) {
         try {
-
-            jpvm = new jpvmEnvironment();
-            tids = new jpvmTaskId[ESCRAVOS_ARMAZEM];
-
             this.larguraTerreno = larguraTerreno;
             this.comprimentoTerreno = comprimentoTerreno;
 
@@ -98,8 +94,10 @@ public class Gerenciador {
             System.out.println("Número de árvores no terreno: " + ter.getNumArvores());
 
         } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Vish5");
             JOptionPane.showMessageDialog(null, ex.getMessage());
         } catch (jpvmException ex) {
+            JOptionPane.showMessageDialog(null, "Vish6");
             Logger.getLogger(Gerenciador.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -145,7 +143,8 @@ public class Gerenciador {
         fot4.join();
 
         this.ambienteFinalizado.set(false);
-
+        jpvm = new jpvmEnvironment();
+        tids = new jpvmTaskId[ESCRAVOS_ARMAZEM];
         //try {
         jpvm.pvm_spawn("atEscravos.carregaArmazem", ESCRAVOS_ARMAZEM, tids);
         jpvmBuffer buf = new jpvmBuffer();
@@ -175,7 +174,10 @@ public class Gerenciador {
         }
         jpvm.pvm_exit();
 
-        System.out.println("Ate aqui blz");
+        System.out.println("Ate aqui blz11");
+        
+        jpvm = new jpvmEnvironment();
+        tids = new jpvmTaskId[ESCRAVOS_ARMAZEM];
 
         jpvm.pvm_spawn("atEscravos.executarEtapa", ESCRAVOS_ARMAZEM, tids);
         buf = new jpvmBuffer();
@@ -200,6 +202,8 @@ public class Gerenciador {
             jpvmMessage message = jpvm.pvm_recv();
 
             ArrayList arvores = Dao.getInstancia().deserialize(message.buffer.upkstr(), ArrayList.class);
+            if(arvores == null)
+                System.out.println("aqui2 null");
             switch (message.messageTag) {
                 case 0:
                     for (Object object : arvores) {
@@ -225,6 +229,7 @@ public class Gerenciador {
         }
 
         jpvm.pvm_exit();
+        
 
         System.out.println("Depois etapas");
 
