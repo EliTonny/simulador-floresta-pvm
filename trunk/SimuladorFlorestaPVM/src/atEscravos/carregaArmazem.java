@@ -1,7 +1,6 @@
 package atEscravos;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import javax.swing.JOptionPane;
 import jpvm.jpvmBuffer;
 import jpvm.jpvmEnvironment;
@@ -22,9 +21,8 @@ public class carregaArmazem {
             jpvmTaskId parent = jpvm.pvm_parent();
             jpvmBuffer buf = new jpvmBuffer();
             Armazem armazem = null;
-            Terreno ter = Dao.getInstancia().deserialize(message.buffer.upkstr(), Terreno.class);
-
             try {
+                Terreno ter = Dao.getInstancia().deserialize(message.buffer.upkstr(), Terreno.class);
 
                 switch (message.messageTag) {
                     case 0:
@@ -44,20 +42,18 @@ public class carregaArmazem {
                         armazem = new Armazem(ter.getArvoresEtapa(EnumEtapaProcesso.ADULTA));
                         break;
                 }
-                
-                buf.pack(Dao.getInstancia().serialize(armazem));
 
+                buf.pack(Dao.getInstancia().serialize(armazem));
                 jpvm.pvm_send(buf, parent, message.messageTag);
+                
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "Vish3");
-                buf.pack("Erro");
-                jpvm.pvm_send(buf, parent, message.messageTag);
+                buf.pack("Erro: " + ex.getMessage());
+                jpvm.pvm_send(buf, parent, 99);
             }
 
             jpvm.pvm_exit();
-        } catch (jpvmException | UnsupportedEncodingException | ClassNotFoundException ex) {
-            JOptionPane.showMessageDialog(null, "Vish4");
-            System.out.println(ex.getMessage());
+        } catch (jpvmException ex) {
+            JOptionPane.showMessageDialog(null, "Erro no escravo armazem: \r\n" + ex.getMessage());
         }
     }
 }

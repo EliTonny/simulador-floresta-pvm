@@ -1,23 +1,15 @@
 package simuladorflorestapvm;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import jpvm.jpvmBuffer;
 import jpvm.jpvmEnvironment;
 import jpvm.jpvmException;
 import jpvm.jpvmMessage;
 import jpvm.jpvmTaskId;
-import simuladorflorestapvm.etapasCiclo.Adulta;
-import simuladorflorestapvm.etapasCiclo.Broto;
-import simuladorflorestapvm.etapasCiclo.Morte;
-import simuladorflorestapvm.etapasCiclo.Semente;
+import static simuladorflorestapvm.Gerenciador.instancia;
 
 public class Gerenciador {
 
@@ -93,12 +85,8 @@ public class Gerenciador {
             System.out.println(lenhador3.getDados());
             System.out.println("Número de árvores no terreno: " + ter.getNumArvores());
 
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "Vish5");
+        } catch (Exception | jpvmException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
-        } catch (jpvmException ex) {
-            JOptionPane.showMessageDialog(null, "Vish6");
-            Logger.getLogger(Gerenciador.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -145,18 +133,15 @@ public class Gerenciador {
         this.ambienteFinalizado.set(false);
         jpvm = new jpvmEnvironment();
         tids = new jpvmTaskId[ESCRAVOS_ARMAZEM];
-        //try {
         jpvm.pvm_spawn("atEscravos.carregaArmazem", ESCRAVOS_ARMAZEM, tids);
         jpvmBuffer buf = new jpvmBuffer();
         String arquivoSerializado = Dao.getInstancia().serialize(Terreno.getInstancia());
         buf.pack(arquivoSerializado);
-
         for (int i = 0; i < ESCRAVOS_ARMAZEM; i++) {
             jpvm.pvm_send(buf, tids[i], i);
         }
         for (int i = 0; i < ESCRAVOS_ARMAZEM; i++) {
             jpvmMessage message = jpvm.pvm_recv();
-
             switch (message.messageTag) {
                 case 0:
                     armMorte = Dao.getInstancia().deserialize(message.buffer.upkstr(), Armazem.class);
@@ -170,88 +155,63 @@ public class Gerenciador {
                 case 3:
                     armAdulta = Dao.getInstancia().deserialize(message.buffer.upkstr(), Armazem.class);
                     break;
+                default:
+                    System.out.println(message.buffer.upkstr());
+                    break;
             }
         }
         jpvm.pvm_exit();
-
-        System.out.println("Ate aqui blz11");
+        
         
         jpvm = new jpvmEnvironment();
         tids = new jpvmTaskId[ESCRAVOS_ARMAZEM];
-
+        
         jpvm.pvm_spawn("atEscravos.executarEtapa", ESCRAVOS_ARMAZEM, tids);
         buf = new jpvmBuffer();
-
+        
         arquivoSerializado = Dao.getInstancia().serialize(armMorte);
         buf.pack(arquivoSerializado);
         jpvm.pvm_send(buf, tids[0], 0);
-
+        
         arquivoSerializado = Dao.getInstancia().serialize(armSemente);
         buf.pack(arquivoSerializado);
         jpvm.pvm_send(buf, tids[1], 1);
-
+        
         arquivoSerializado = Dao.getInstancia().serialize(armBroto);
         buf.pack(arquivoSerializado);
         jpvm.pvm_send(buf, tids[2], 2);
-
+        
         arquivoSerializado = Dao.getInstancia().serialize(armAdulta);
         buf.pack(arquivoSerializado);
         jpvm.pvm_send(buf, tids[3], 3);
-
+        
         for (int i = 0; i < ESCRAVOS_ARMAZEM; i++) {
             jpvmMessage message = jpvm.pvm_recv();
-
-            ArrayList arvores = Dao.getInstancia().deserialize(message.buffer.upkstr(), ArrayList.class);
-            if(arvores == null)
-                System.out.println("aqui2 null");
+            ArrayList arvores = null;
             switch (message.messageTag) {
                 case 0:
-                    for (Object object : arvores) {
-                        Terreno.getInstancia().killArvore((Arvore) object);
-                    }
+                    arvores = Dao.getInstancia().deserialize(message.buffer.upkstr(), ArrayList.class);
                     break;
                 case 1:
-                    for (Object object : arvores) {
-                        Terreno.getInstancia().atualizaAtributos((Arvore) object);
-                    }
+                    arvores = Dao.getInstancia().deserialize(message.buffer.upkstr(), ArrayList.class);
                     break;
                 case 2:
-                    for (Object object : arvores) {
-                        Terreno.getInstancia().atualizaAtributos((Arvore) object);
-                    }
+                    arvores = Dao.getInstancia().deserialize(message.buffer.upkstr(), ArrayList.class);
                     break;
                 case 3:
-                    for (Object object : arvores) {
-                        Terreno.getInstancia().atualizaAtributos((Arvore) object);
-                    }
+                    arvores = Dao.getInstancia().deserialize(message.buffer.upkstr(), ArrayList.class);
+                    break;
+                default:
+                    System.out.println(message.buffer.upkstr());
                     break;
             }
+            if (arvores != null) {
+                for (Object object : arvores) {
+                    Terreno.getInstancia().killArvore((Arvore) object);
+                }
+            }
         }
-
         jpvm.pvm_exit();
-        
-
-        System.out.println("Depois etapas");
-
-        /*Armazem armMorte = new Armazem(ter.getArvoresEtapa());
-         Armazem armSemente = new Armazem(ter.getArvoresEtapa(EnumEtapaProcesso.SEMENTE));
-         Armazem armBroto = new Armazem(ter.getArvoresEtapa(EnumEtapaProcesso.BROTO));
-         Armazem armAdulta = new Armazem(ter.getArvoresEtapa(EnumEtapaProcesso.ADULTA));*/
-        /*Morte morte1 = new Morte(armMorte);
-         Morte morte2 = new Morte(armMorte);
-         Morte morte3 = new Morte(armMorte);
-            
-         Semente semente1 = new Semente(armSemente);
-         Semente semente2 = new Semente(armSemente);
-         Semente semente3 = new Semente(armSemente);
-            
-         Broto broto1 = new Broto(armBroto);
-         Broto broto2 = new Broto(armBroto);
-         Broto broto3 = new Broto(armBroto);
-            
-         Adulta adulta1 = new Adulta(armAdulta);
-         Adulta adulta2 = new Adulta(armAdulta);
-         Adulta adulta3 = new Adulta(armAdulta);*/
     }
 
     public int getLarguraTerreno() {
