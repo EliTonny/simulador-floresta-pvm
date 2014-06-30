@@ -1,8 +1,14 @@
 package simuladorflorestapvm;
 
 public enum EnumEtapaProcesso {
-    SEMENTE,
-    BROTO,
-    ADULTA,
-    REPRODUCAO
+
+    SEMENTE(1),
+    BROTO(2),
+    ADULTA(3),
+    REPRODUCAO(4);
+    public int valor;
+
+    private EnumEtapaProcesso(int valor) {
+        this.valor = valor;
+    }
 }
