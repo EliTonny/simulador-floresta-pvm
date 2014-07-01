@@ -20,7 +20,7 @@ public class Broto extends Etapa {
         }
         try {
             //Custo de vida
-            arvore.retiraEnergia(60);
+            arvore.retiraEnergia(6);
             if (arvore.getEnergia() > 50) {
                 arvore.retiraEnergia(50);
                 arvore.setTamanho(5);

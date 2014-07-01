@@ -161,54 +161,60 @@ public class Gerenciador {
             }
         }
         jpvm.pvm_exit();
-        
-        
+
         jpvm = new jpvmEnvironment();
         tids = new jpvmTaskId[ESCRAVOS_ARMAZEM];
-        
+
         jpvm.pvm_spawn("atEscravos.executarEtapa", ESCRAVOS_ARMAZEM, tids);
         buf = new jpvmBuffer();
-        
+
         arquivoSerializado = Dao.getInstancia().serialize(armMorte);
         buf.pack(arquivoSerializado);
         jpvm.pvm_send(buf, tids[0], 0);
-        
+
         arquivoSerializado = Dao.getInstancia().serialize(armSemente);
         buf.pack(arquivoSerializado);
         jpvm.pvm_send(buf, tids[1], 1);
-        
+
         arquivoSerializado = Dao.getInstancia().serialize(armBroto);
         buf.pack(arquivoSerializado);
         jpvm.pvm_send(buf, tids[2], 2);
-        
+
         arquivoSerializado = Dao.getInstancia().serialize(armAdulta);
         buf.pack(arquivoSerializado);
         jpvm.pvm_send(buf, tids[3], 3);
-        
+
         for (int i = 0; i < ESCRAVOS_ARMAZEM; i++) {
             jpvmMessage message = jpvm.pvm_recv();
             ArrayList arvores = null;
             switch (message.messageTag) {
                 case 0:
                     arvores = Dao.getInstancia().deserialize(message.buffer.upkstr(), ArrayList.class);
+                    for (Object object : arvores) {
+                        Terreno.getInstancia().killArvore((Arvore) object);
+                    }
                     break;
                 case 1:
                     arvores = Dao.getInstancia().deserialize(message.buffer.upkstr(), ArrayList.class);
+                    for (Object object : arvores) {
+                        Terreno.getInstancia().atualizaAtributos((Arvore) object);
+                    }                    
                     break;
                 case 2:
                     arvores = Dao.getInstancia().deserialize(message.buffer.upkstr(), ArrayList.class);
+                    for (Object object : arvores) {
+                        Terreno.getInstancia().atualizaAtributos((Arvore) object);
+                    }                    
                     break;
                 case 3:
                     arvores = Dao.getInstancia().deserialize(message.buffer.upkstr(), ArrayList.class);
+                    for (Object object : arvores) {
+                        Terreno.getInstancia().atualizaAtributos((Arvore) object);
+                    }                    
                     break;
                 default:
                     System.out.println(message.buffer.upkstr());
                     break;
-            }
-            if (arvores != null) {
-                for (Object object : arvores) {
-                    Terreno.getInstancia().killArvore((Arvore) object);
-                }
             }
         }
         jpvm.pvm_exit();
