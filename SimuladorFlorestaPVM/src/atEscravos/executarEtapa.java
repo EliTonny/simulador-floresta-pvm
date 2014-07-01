@@ -52,12 +52,12 @@ public class executarEtapa {
                         arvores = adulta.run();
                         break;
                 }
-                
+
                 buf.pack(Dao.getInstancia().serialize(arvores));
                 jpvm.pvm_send(buf, parent, message.messageTag);
 
             } catch (Exception ex) {
-                buf.pack(ex.getMessage());
+                buf.pack("Erro em Executar Etapa: " + ex.getMessage());
                 jpvm.pvm_send(buf, parent, 99);
             }
 

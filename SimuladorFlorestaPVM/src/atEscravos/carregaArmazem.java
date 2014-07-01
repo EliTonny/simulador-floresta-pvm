@@ -27,27 +27,27 @@ public class carregaArmazem {
                 switch (message.messageTag) {
                     case 0:
                         //Armazem morte
-                        armazem = new Armazem(ter.getArvoresEtapa());
+                        armazem = new Armazem(ter.getArvoresEtapa(), EnumEtapaProcesso.ALL);
                         break;
                     case 1:
                         //Armazem semente
-                        armazem = new Armazem(ter.getArvoresEtapa(EnumEtapaProcesso.SEMENTE));
+                        armazem = new Armazem(ter.getArvoresEtapa(EnumEtapaProcesso.SEMENTE), EnumEtapaProcesso.SEMENTE);
                         break;
                     case 2:
                         //Armazem broto
-                        armazem = new Armazem(ter.getArvoresEtapa(EnumEtapaProcesso.BROTO));
+                        armazem = new Armazem(ter.getArvoresEtapa(EnumEtapaProcesso.BROTO), EnumEtapaProcesso.BROTO);
                         break;
                     case 3:
                         //Armazem adulta
-                        armazem = new Armazem(ter.getArvoresEtapa(EnumEtapaProcesso.ADULTA));
+                        armazem = new Armazem(ter.getArvoresEtapa(EnumEtapaProcesso.ADULTA), EnumEtapaProcesso.ADULTA);
                         break;
                 }
 
                 buf.pack(Dao.getInstancia().serialize(armazem));
                 jpvm.pvm_send(buf, parent, message.messageTag);
-                
+
             } catch (Exception ex) {
-                buf.pack("Erro: " + ex.getMessage());
+                buf.pack("Erro em carrega armazem: " + ex.getMessage());
                 jpvm.pvm_send(buf, parent, 99);
             }
 

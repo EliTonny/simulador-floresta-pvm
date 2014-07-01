@@ -157,7 +157,7 @@ public class Gerenciador {
                     break;
                 default:
                     System.out.println(message.buffer.upkstr());
-                    break;
+                    throw new Exception(message.buffer.upkstr());
             }
         }
         jpvm.pvm_exit();
@@ -188,33 +188,33 @@ public class Gerenciador {
             jpvmMessage message = jpvm.pvm_recv();
             ArrayList arvores = null;
             switch (message.messageTag) {
-                case 0:
+                case 0://DEAD
                     arvores = Dao.getInstancia().deserialize(message.buffer.upkstr(), ArrayList.class);
                     for (Object object : arvores) {
                         Terreno.getInstancia().killArvore((Arvore) object);
                     }
                     break;
-                case 1:
+                case 1://SEMENTE
                     arvores = Dao.getInstancia().deserialize(message.buffer.upkstr(), ArrayList.class);
                     for (Object object : arvores) {
                         Terreno.getInstancia().atualizaAtributos((Arvore) object);
-                    }                    
+                    }
                     break;
-                case 2:
+                case 2: //BROTO
                     arvores = Dao.getInstancia().deserialize(message.buffer.upkstr(), ArrayList.class);
                     for (Object object : arvores) {
                         Terreno.getInstancia().atualizaAtributos((Arvore) object);
-                    }                    
+                    }
                     break;
-                case 3:
+                case 3://ADULTA
                     arvores = Dao.getInstancia().deserialize(message.buffer.upkstr(), ArrayList.class);
                     for (Object object : arvores) {
                         Terreno.getInstancia().atualizaAtributos((Arvore) object);
-                    }                    
+                    }
                     break;
                 default:
                     System.out.println(message.buffer.upkstr());
-                    break;
+                    throw new Exception(message.buffer.upkstr());
             }
         }
         jpvm.pvm_exit();

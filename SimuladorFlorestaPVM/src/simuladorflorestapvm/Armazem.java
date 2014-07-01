@@ -11,13 +11,19 @@ public class Armazem implements Serializable {
     private Object[] arm;
     private Semaphore acesso;
     private Semaphore haElementos;
+    private EnumEtapaProcesso tipo;
 
-    public Armazem(ArrayList lista) {
+    public EnumEtapaProcesso getTipo() {
+        //return EnumEtapaProcesso.values()[tipo];
+        return tipo;
+    }
+
+    public Armazem(ArrayList lista, EnumEtapaProcesso tipo) {
         this.tam = lista.size();
         this.arm = lista.toArray();
         this.acesso = new Semaphore(1);
         this.haElementos = new Semaphore(tam);
-
+        this.tipo = tipo;
     }
 
     public Object retira() throws InterruptedException {
