@@ -13,12 +13,12 @@ public class Semente extends Etapa {
     }
 
     @Override
-    public Arvore executar(Arvore arvore) {
+    public Arvore executar(Arvore arvore) throws Exception {
         if (arvore == null) {
             return null;
         }
 
-        try {
+        //try {
             if (arvore.retiraSaisMinerais(10)) {
                 if (arvore.retiraAgua(10)) {
                     if (!arvore.setTamanho(1)) {
@@ -33,9 +33,9 @@ public class Semente extends Etapa {
                     arvore.setEtapa(EnumEtapaProcesso.BROTO);
                 }
             }
-        } catch (Exception ex) {
+        /*} catch (Exception ex) {
             Logger.getLogger(Semente.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        }*/
         return arvore;
     }
 }

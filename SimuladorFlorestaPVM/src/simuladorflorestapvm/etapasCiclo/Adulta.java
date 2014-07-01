@@ -20,7 +20,7 @@ public class Adulta extends Etapa {
         }
         try {
             //Custo de Vida
-            arvore.retiraEnergia(60);
+            arvore.retiraEnergia(6);
             if (arvore.getEnergia() > 100) {
                 arvore.setTamanho(5);
             }

@@ -14,7 +14,7 @@ public abstract class Etapa {
         this.armazem = armazem;
     }
 
-    public abstract Arvore executar(Arvore arvore);
+    public abstract Arvore executar(Arvore arvore) throws Exception;
 
     public ArrayList run() {
         ArrayList retorno = new ArrayList();
