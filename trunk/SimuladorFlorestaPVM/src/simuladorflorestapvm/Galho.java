@@ -1,6 +1,8 @@
 package simuladorflorestapvm;
 
-public class Galho {
+import java.io.Serializable;
+
+public class Galho implements Serializable {
 
     private int qtdFolhas;
     private final int qtdMaxFolhas;

@@ -116,6 +116,7 @@ public abstract class Arvore implements Serializable {
     public String ImprimeDados() {
         String saida = "";
         int qtdfolhas = 0;
+        saida += "ID: " + this.ID + "\n";
         saida += this.etapa.toString() + "\n";
         saida += Integer.toString(this.tamanho) + "\n";
         saida += "Qtd. Galhos: " + Integer.toString(galhos.size()) + "\n";

@@ -50,15 +50,15 @@ public class Ambiente extends Thread {
     }
 
     private int getAgua() {
-        return getRandom(0, 10);
+        return getRandom(1, 10);
     }
 
     private int getLuz() {
-        return getRandom(0, 10);
+        return getRandom(1, 10);
     }
 
     private int getSaisMinerais() {
-        return getRandom(0, 10);
+        return getRandom(1, 10);
     }
 
     private int getRandom(int min, int max) {
