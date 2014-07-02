@@ -27,7 +27,9 @@ public class Broto extends Etapa {
             }
             for (Galho galhos : arvore.getGalhos()) {
                 if (arvore.getEnergia() > 100) {
-                    galhos.addFolha();
+                    if(galhos.addFolha()){
+                      arvore.retiraEnergia(100);
+                    }
                 }
             }
             //Crescer galho
