@@ -171,15 +171,18 @@ public class Gerenciador {
         arquivoSerializado = Dao.getInstancia().serialize(armMorte);
         buf.pack(arquivoSerializado);
         jpvm.pvm_send(buf, tids[0], 0);
-
+        buf = new jpvmBuffer();
+        
         arquivoSerializado = Dao.getInstancia().serialize(armSemente);
         buf.pack(arquivoSerializado);
         jpvm.pvm_send(buf, tids[1], 1);
-
+        
+        buf = new jpvmBuffer();
         arquivoSerializado = Dao.getInstancia().serialize(armBroto);
         buf.pack(arquivoSerializado);
         jpvm.pvm_send(buf, tids[2], 2);
-
+        
+        buf = new jpvmBuffer();
         arquivoSerializado = Dao.getInstancia().serialize(armAdulta);
         buf.pack(arquivoSerializado);
         jpvm.pvm_send(buf, tids[3], 3);
