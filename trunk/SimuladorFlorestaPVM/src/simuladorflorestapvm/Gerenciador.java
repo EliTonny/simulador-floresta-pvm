@@ -94,7 +94,7 @@ public class Gerenciador {
 
         AtomicInteger numArvoresProcessadas = new AtomicInteger(0);
         ambienteFinalizado.set(false);
-
+        ter.IniciaNovoDia();
         Ambiente amb1 = new Ambiente(ter, ambienteFinalizado, numArvoresProcessadas);
         Ambiente amb2 = new Ambiente(ter, ambienteFinalizado, numArvoresProcessadas);
         Ambiente amb3 = new Ambiente(ter, ambienteFinalizado, numArvoresProcessadas);
@@ -191,24 +191,28 @@ public class Gerenciador {
                 case 0://DEAD
                     arvores = Dao.getInstancia().deserialize(message.buffer.upkstr(), ArrayList.class);
                     for (Object object : arvores) {
+                        System.out.println(((Arvore) object).ImprimeDados());
                         Terreno.getInstancia().killArvore((Arvore) object);
                     }
                     break;
                 case 1://SEMENTE
                     arvores = Dao.getInstancia().deserialize(message.buffer.upkstr(), ArrayList.class);
                     for (Object object : arvores) {
+                        System.out.println(((Arvore) object).ImprimeDados());
                         Terreno.getInstancia().atualizaAtributos((Arvore) object);
                     }
                     break;
                 case 2: //BROTO
                     arvores = Dao.getInstancia().deserialize(message.buffer.upkstr(), ArrayList.class);
                     for (Object object : arvores) {
+                        System.out.println(((Arvore) object).ImprimeDados());
                         Terreno.getInstancia().atualizaAtributos((Arvore) object);
                     }
                     break;
                 case 3://ADULTA
                     arvores = Dao.getInstancia().deserialize(message.buffer.upkstr(), ArrayList.class);
                     for (Object object : arvores) {
+                        System.out.println(((Arvore) object).ImprimeDados());
                         Terreno.getInstancia().atualizaAtributos((Arvore) object);
                     }
                     break;

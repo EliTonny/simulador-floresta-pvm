@@ -86,9 +86,9 @@ public class Terreno implements Serializable {
             return false;
         }
     }
-    
-    public synchronized boolean atualizaAtributos(Arvore arvore){
-        if(arvores[arvore.getPosicao().getX()][arvore.getPosicao().getY()] != null){
+
+    public synchronized boolean atualizaAtributos(Arvore arvore) {
+        if (arvores[arvore.getPosicao().getX()][arvore.getPosicao().getY()] != null) {
             arvores[arvore.getPosicao().getX()][arvore.getPosicao().getY()] = arvore;
             return true;
         }
@@ -105,8 +105,9 @@ public class Terreno implements Serializable {
     public synchronized Arvore retiraArvoreCorte() throws InterruptedException {
         while (arvoresCorte.isEmpty()) {
             wait(1000);
-            if(finalizarProcesso)
+            if (finalizarProcesso) {
                 return null;
+            }
         }
         return arvoresCorte.poll();
     }
@@ -182,8 +183,18 @@ public class Terreno implements Serializable {
         arvores[pos.getX()][pos.getY()] = arvore;
         numArvores++;
 
-        arvoresAmbiente.add(arvore);
         return true;
+    }
+
+    public void IniciaNovoDia() {
+        arvoresAmbiente.clear();
+        for (int i = 0; i < arvores.length; i++) {
+            for (int j = 0; j < arvores[i].length; j++) {
+                if (arvores[i][j] != null) {
+                    arvoresAmbiente.add(arvores[i][j]);
+                }
+            }
+        }
     }
 
     public void addArvoreFilha(Arvore arvoreFilha, Arvore arvoreMae) {
